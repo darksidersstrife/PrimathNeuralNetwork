@@ -3,42 +3,22 @@
 
 using namespace std;
 
+#define SCALE 1.0
 
 double func(double x)
 {
-	return exp(x);
+	return exp(x) / SCALE;
 }
-
-double sigmoid(double x)
-{
-	return 1 / (1 + exp(-x));
-}
-
-double sigmoidDer(double x)
-{
-	return sigmoid(x) * 1 - sigmoid(x);
-}
-
-double tanh1(double x)
-{
-	return (exp(2 * x) - 1) / (exp(2 * x) + 1);
-}
-
-double tanhDer(double x)
-{
-	return (1 - tanh1(x) * tanh1(x));
-}
-
 
 int main()
 {
 	NeuralNetwork nw(1);
-	//nw.AddLayer(10, sigmoid, sigmoidDer);
-	nw.AddLayer(10, relu, reluDer);
-	nw.learningRate = 0.0000000000000001;
+	nw.AddLayer(100);
+	nw.learningRate = 0.000001;
+	//nw.moment = 0.0;
 	nw.initialize();
 	double x = -10.0;
-	for (size_t j = 0; j < 1000000; j++)
+	for (size_t j = 0; j < 200000; j++)
 	{
 		x = -10.0;
 		vector<vector<double>> inputs, outputs;
@@ -51,17 +31,21 @@ int main()
 			x += 0.2;
 		}
 		nw.TrainBatch(inputs, outputs);
-		x = -10.0;
-		double err1 = 0.0, err2 = 0.0;
-		for (size_t i = 0; i <= 200; i++)
+		if (j % 1000 == 0)
 		{
-			nw.calculate(std::vector<double>(1, x / 10.0));
-			//cout << (1000 * nw.getOutput() - func(x)) << " ";
-			err1 += (nw.getOutput() - func(x)) * (nw.getOutput() - func(x));
-			err2 += abs(nw.getOutput() - func(x));
-			x += 0.1;
+			x = -10.0;
+			double err1 = 0.0, err2 = 0.0;
+			for (size_t i = 0; i <= 100; i++)
+			{
+				nw.calculate(std::vector<double>(1, x / 10.0));
+				//cout << (1000 * nw.getOutput() - func(x)) << " ";
+				double diff = (nw.getOutput() - func(x)) * SCALE;
+				err1 += diff * diff;
+				err2 += abs(diff);
+				x += 0.2;
+			}
+			cout << endl << j / 1000 + 1 << " " << err1 / 200.0 << " " << err2 / 200.0;
 		}
-		cout << endl << err1 / 200.0 << endl << err2 / 200.0;
 	}
 	x = -10.0;
 	double err1 = 0.0, err2 = 0.0;
@@ -70,8 +54,8 @@ int main()
 	{
 		nw.calculate(std::vector<double>(1, x / 10.0));
 		gr << x << ", " << nw.getOutput() << endl;
-		err1 += (nw.getOutput() - func(x)) * (nw.getOutput() - func(x));
-		err2 += abs(nw.getOutput() - func(x));
+		err1 += (nw.getOutput() - func(x) * SCALE) * (nw.getOutput() - func(x) * SCALE);
+		err2 += abs(nw.getOutput() - func(x) * SCALE);
 		x += 0.1;
 	}
 	cout << endl << err1 / 200.0 << " " << err2 / 200.0;
