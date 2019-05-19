@@ -5,12 +5,13 @@
 
 double function(double x)
 {
-	return x > 0.0 ? x : x / 100.0;
+	//return x > 0.0 ? x : x / 100.0;
+	return 1 / (1 + exp(-x));
 }
 
 double der(double x)
 {
-	return x > 0.0 ? 1 : 1.0 / 100.0;
+	return function(x) * (1 - function(x));
 }
 
 class NeuralNetwork
@@ -62,7 +63,7 @@ public:
 	{
 		std::random_device rd;
 		std::mt19937_64 gen(rd());
-		std::uniform_real_distribution<double> dis(0.1, 0.5);
+		std::normal_distribution<double> dis(0.0, 1);
 		for (auto& layer : layers)
 		{
 			for (auto& neuron : layer.neurons)
@@ -70,7 +71,7 @@ public:
 				for (size_t i = 0; i < neuron.inputWeights.size(); i++)
 				{
 					neuron.inputWeights[i] = dis(gen);
-					neuron.previousWeights[i] = dis(gen);
+					neuron.previousWeights[i] = neuron.inputWeights[i];
 				}
 			}
 		}
@@ -79,7 +80,7 @@ public:
 			for (size_t i = 0; i < neuron.inputWeights.size(); i++)
 			{
 				neuron.inputWeights[i] = dis(gen);
-				neuron.previousWeights[i] = dis(gen);
+				neuron.previousWeights[i] = neuron.inputWeights[i];
 			}
 		}
 	}
