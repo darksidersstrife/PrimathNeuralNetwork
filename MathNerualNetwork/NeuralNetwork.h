@@ -3,15 +3,15 @@
 #include <random>
 #include <fstream>
 
-double function(double x)
+double ActivationFunction(double x)
 {
 	//return x > 0.0 ? x : x / 100.0;
 	return 1 / (1 + exp(-x));
 }
 
-double der(double x)
+double der(double x, double f)
 {
-	return function(x) * (1 - function(x));
+	return f * (1 - f);
 }
 
 class NeuralNetwork
@@ -184,7 +184,7 @@ public:
 			{
 				neurons[i].error += next_layer_neurons[j].delta * next_layer_neurons[j].inputWeights[i];
 			}
-			neurons[i].delta = neurons[i].error * der(neurons[i].sum);
+			neurons[i].delta = neurons[i].error * der(neurons[i].sum, neurons[i].func);
 		}
 		for (int k = layers.size() - 2; k >= 0; k--)
 		{
@@ -197,7 +197,7 @@ public:
 				{
 					neurons[i].error += next_layer_neurons[j].delta * next_layer_neurons[j].inputWeights[i];
 				}
-				neurons[i].delta = neurons[i].error * der(neurons[i].sum);
+				neurons[i].delta = neurons[i].error * der(neurons[i].sum, neurons[i].func);
 			}
 		}
 		for (size_t i = 0; i < lastLayer.neurons.size(); i++)
@@ -245,7 +245,7 @@ private:
 				res += inputWeights[i] * input[i];
 			}
 			sum = res + inputWeights[inputWeights.size() - 1];
-			func = function(sum);
+			func = ActivationFunction(sum);
 			return func;
 		}
 		double last(std::vector<double>& input)

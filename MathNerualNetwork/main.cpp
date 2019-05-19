@@ -7,14 +7,14 @@ using namespace std;
 
 double func(double x)
 {
-	return exp(x) / SCALE;
+	return (exp(x) + exp(-x)) / 2.0 / SCALE;
 }
 
 int main()
 {
 	NeuralNetwork nw(1);
 	nw.AddLayer(100);
-	nw.learningRate = 0.000001;
+	nw.learningRate = 0.00001;
 	nw.moment = 0.0;
 	nw.initialize();
 	double x = -10.0;
@@ -26,12 +26,12 @@ int main()
 		for (size_t i = 0; i <= 100; i++)
 		{
 			
-			nw.TrainBatch(vector<std::vector<double>>(1, vector<double>(1, x / 10.0)), vector<std::vector<double>>(1, vector<double>(1, func(x))));
+			//nw.TrainBatch(vector<std::vector<double>>(1, vector<double>(1, x / 10.0)), vector<std::vector<double>>(1, vector<double>(1, func(x))));
 			inputs.push_back(std::vector<double>(1, x / 10.0));
 			outputs.push_back(vector<double>(1, func(x)));
 			x += 0.2;
 		}
-		//nw.TrainBatch(inputs, outputs);
+		nw.TrainBatch(inputs, outputs);
 		
 		if (j % 1000 == 0)
 		{
