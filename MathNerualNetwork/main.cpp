@@ -10,7 +10,7 @@ double func(double x)
 	return sqrt(1+4*x+12*x*x) / SCALE;
 }
 
-int main()
+void train1()
 {
 	NeuralNetwork nw(1);
 	nw.AddLayer(100);
@@ -25,20 +25,20 @@ int main()
 		vector<vector<double>> inputs, outputs;
 		for (size_t i = 0; i <= 100; i++)
 		{
-			
+
 			//nw.TrainBatch(vector<std::vector<double>>(1, vector<double>(1, x / 10.0)), vector<std::vector<double>>(1, vector<double>(1, func(x))));
 			inputs.push_back(std::vector<double>(1, x / 10.0));
 			outputs.push_back(vector<double>(1, func(x)));
 			x += 0.2;
 		}
 		nw.TrainBatch(inputs, outputs);
-		
+
 		if (j % 1000 == 0)
 		{
 			err1 = 0.0;
 			err2 = 0.0;
 			x = -10.0;
-			
+
 			for (size_t i = 0; i <= 100; i++)
 			{
 				nw.calculate(std::vector<double>(1, x / 10.0));
@@ -67,5 +67,10 @@ int main()
 	cout << endl << err1 / 201.0 << " " << err2 / 201.0;
 	int b;
 	cin >> b;
+}
+
+int main()
+{
+	
 	return 0;
 }
